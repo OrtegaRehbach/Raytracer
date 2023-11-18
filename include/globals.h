@@ -11,11 +11,13 @@ extern bool running;
 struct Screen {
     const int width;
     const int height;
-	int centerX;
-	int centerY;
+	int halfWidth;
+	int halfHeight;
+	float aspectRatio;
 
 	Screen(int w, int h) : width(w), height(h) {
-		centerX = width / 2;
-		centerY = height / 2;
+		halfWidth = width / 2;
+		halfHeight = height / 2;
+		aspectRatio = (float)width / (float)height;
 	}
-} screen = {900, 900};
+} screen = {800, 600};
