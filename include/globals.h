@@ -2,11 +2,11 @@
 
 #include "color.h"
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-const Uint8* KeyboardState;
-double deltaTime;
-bool running;
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+extern const Uint8* KeyboardState;
+extern double deltaTime;
+extern bool running;
 
 struct Screen {
     const int width;
