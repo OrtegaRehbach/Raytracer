@@ -3,9 +3,15 @@
 #include <SDL_render.h>
 #include <SDL_video.h>
 #include <sstream>
+#include <glm/glm.hpp>
 
 #include "globals.h"
 
+SDL_Window* window;
+SDL_Renderer* renderer;
+const Uint8* KeyboardState;
+double deltaTime;
+bool running;
 
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -23,6 +29,32 @@ void quit() {
 void clear() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+}
+
+void drawPoint(glm::vec2 position, Color color) {
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderDrawPoint(renderer, position.x, position.y);
+}
+
+Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
+    if (rayDirection.x < 0)
+        return C_GREEN;
+    return C_BLUE;
+}
+
+void render() {
+    for (int y = 0; y < screen.height; y++) {
+        for (int x = 0; x < screen.width; x++) {
+            float screenX =   (2.0f * x) / screen.width - 1.0f;
+            float screenY = - (2.0f * y) / screen.height - 1.0f;
+            screenX *= screen.aspectRatio;
+
+            glm::vec3 rayDirection = glm::normalize(glm::vec3(screenX, screenY, -1.0f));
+            Color pixelColor = castRay(glm::vec3(0, 0, 0), rayDirection);
+
+            drawPoint(glm::vec2(x, y), pixelColor);
+        }
+    }
 }
 
 int main() {
@@ -48,6 +80,8 @@ int main() {
                 }
             }
         }
+
+        render();
 
         SDL_RenderPresent(renderer);
 
