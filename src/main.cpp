@@ -22,8 +22,19 @@ std::vector<Object*> objects;
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
     window = SDL_CreateWindow("RAYTRACER", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen.width, screen.height, SDL_WINDOW_SHOWN);
+    if (!window) {
+        SDL_Log("Unable to create window: %s", SDL_GetError());
+        SDL_Quit();
+        exit(1);
+    }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    if (!renderer) {
+        SDL_Log("Unable to create renderer: %s", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        exit(1);
+    }
 }
 
 void quit() {
