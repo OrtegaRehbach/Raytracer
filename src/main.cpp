@@ -28,7 +28,7 @@ void init() {
         exit(1);
     }
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     if (!renderer) {
         SDL_Log("Unable to create renderer: %s", SDL_GetError());
         SDL_DestroyWindow(window);
