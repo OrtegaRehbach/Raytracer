@@ -4,4 +4,5 @@
 
 struct Material {
     Color diffuse;
+    float albedo;
 };

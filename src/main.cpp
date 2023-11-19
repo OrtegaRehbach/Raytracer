@@ -81,7 +81,7 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     float diffuseLightIntensity = glm::max(0.0f, glm::dot(intersect.normal, lightDirection));
 
     Material mat = hitObject->material;
-    Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity;
+    Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
     Color color = diffuseLight;
     return color;
 

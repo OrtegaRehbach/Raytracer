@@ -25,5 +25,5 @@ struct Screen {
 	}
 } screen = {800, 600};
 
-const Material MAT_RUBBER = {Color(80, 0, 0)};
-const Material MAT_IVORY = {Color(100, 100, 80)};
+const Material MAT_RUBBER = {Color(80, 0, 0), 0.6f};
+const Material MAT_IVORY = {Color(100, 100, 80), 0.9f};
