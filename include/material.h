@@ -5,4 +5,6 @@
 struct Material {
     Color diffuse;
     float albedo;
+    float specularAlbedo;
+    float specularCoefficient;
 };

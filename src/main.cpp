@@ -17,7 +17,7 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 bool performanceMode = false;
-Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f};
+Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f, C_WHITE};
 Camera camera(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 
 std::vector<Object*> objects;
@@ -76,13 +76,19 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     if (!intersect.isIntersecting)
         return C_CYAN;
     
+    Material mat = hitObject->material;
+
     glm::vec3 lightDirection = glm::normalize(light.position - intersect.point);
 
     float diffuseLightIntensity = glm::max(0.0f, glm::dot(intersect.normal, lightDirection));
+    glm::vec3 reflectDirection = glm::reflect(-lightDirection, intersect.normal);
+    float specularReflection = glm::max(0.0f, glm::dot(-rayDirection, reflectDirection));
+    float specularLightIntensity = std::pow(specularReflection, mat.specularCoefficient);
 
-    Material mat = hitObject->material;
     Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
-    Color color = diffuseLight;
+    Color specularLight = light.color * light.intensity * specularLightIntensity * mat.specularAlbedo;
+    
+    Color color = diffuseLight + specularLight;
     return color;
 
 }
