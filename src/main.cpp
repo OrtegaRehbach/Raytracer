@@ -103,7 +103,11 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
     Color specularLight = light.color * light.intensity * specularLightIntensity * mat.specularAlbedo;
     
-    Color color = (diffuseLight + specularLight) * shadowIntensity;
+    Color color;
+    if (shadowIntensity == 1)   // Only add specular highlight on areas not in shadow
+        color = (diffuseLight + specularLight) * shadowIntensity;
+    else
+        color = diffuseLight * shadowIntensity;
     return color;
 
 }
