@@ -17,7 +17,7 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 bool performanceMode = false;
-Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f, C_WHITE};
+Light light = {glm::vec3(0.0f, 0.0f, 2.0f), 2.5f, C_WHITE};
 Camera camera(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 
 std::vector<Object*> objects;
@@ -57,8 +57,22 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
-    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER));
-    objects.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -2.0f), 1.0f, MAT_IVORY));
+    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 0.8f, MAT_RUBBER));
+    objects.push_back(new Sphere(glm::vec3(-3.0f, 0.0f, -4.0f), 1.5f, MAT_IVORY));
+}
+
+float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Object* hitObject) {
+    for (auto& obj : objects) {
+        if (obj != hitObject) {
+            Intersect shadowIntersect = obj->rayIntersect(shadowOrigin, lightDir);
+            if (shadowIntersect.isIntersecting && shadowIntersect.distance > 0) {
+                float shadowRatio = shadowIntersect.distance / glm::length(light.position - shadowOrigin);
+                shadowRatio = glm::min(1.0f, shadowRatio);
+                return 1.0f - shadowRatio;
+            }
+        }
+    }
+    return 1.0f;
 }
 
 Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
@@ -84,11 +98,12 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
     glm::vec3 reflectDirection = glm::reflect(-lightDirection, intersect.normal);
     float specularReflection = glm::max(0.0f, glm::dot(-rayDirection, reflectDirection));
     float specularLightIntensity = std::pow(specularReflection, mat.specularCoefficient);
+    float shadowIntensity = castShadow(intersect.point, lightDirection, hitObject);
 
     Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
     Color specularLight = light.color * light.intensity * specularLightIntensity * mat.specularAlbedo;
     
-    Color color = diffuseLight + specularLight;
+    Color color = (diffuseLight + specularLight) * shadowIntensity;
     return color;
 
 }
