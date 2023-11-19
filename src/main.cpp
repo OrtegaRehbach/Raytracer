@@ -16,6 +16,7 @@ SDL_Renderer* renderer;
 const Uint8* KeyboardState;
 double deltaTime;
 bool running;
+bool performanceMode = false;
 Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f};
 Camera camera(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 
@@ -90,6 +91,11 @@ void render() {
     float fov = M_PI_2;
     for (int y = 0; y < screen.height; y++) {
         for (int x = 0; x < screen.width; x++) {
+            if (performanceMode) {
+                float random_value = (float)std::rand() / (float)RAND_MAX;
+                if (random_value < 0.75f) continue;
+            }
+
             float screenX =  ((2.0f * (x + 0.5f)) / screen.width  - 1.0f) * tan(fov / 2.0f) * screen.aspectRatio;
             float screenY = (-(2.0f * (y + 0.5f)) / screen.height + 1.0f) * tan(fov / 2.0f);
 
@@ -127,6 +133,8 @@ int main() {
                     running = false;
                     break;
                 }
+                if (event.key.keysym.sym == SDLK_p)
+                    performanceMode = !performanceMode;
             }
         }
         if (KeyboardState[SDL_SCANCODE_UP])
