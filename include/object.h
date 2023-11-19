@@ -2,7 +2,12 @@
 
 #include <glm/glm.hpp>
 
+#include "material.h"
+#include "intersect.h"
+
 class Object {
 public:
-    virtual bool rayIntersect(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) const = 0;
+    Object(const Material& material) : material(material) {}
+    virtual Intersect rayIntersect(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) const = 0;
+    Material material;
 };

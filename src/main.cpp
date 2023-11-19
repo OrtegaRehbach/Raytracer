@@ -4,14 +4,20 @@
 #include <SDL_video.h>
 #include <sstream>
 #include <glm/glm.hpp>
+#include <vector>
 
 #include "globals.h"
+#include "object.h"
+#include "sphere.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
 const Uint8* KeyboardState;
 double deltaTime;
 bool running;
+Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f};
+
+std::vector<Object*> objects;
 
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -36,21 +42,46 @@ void drawPoint(glm::vec2 position, Color color) {
     SDL_RenderDrawPoint(renderer, position.x, position.y);
 }
 
+void setUpObjects() {
+    objects.push_back(new Sphere(glm::vec3(0.0f, 3.0f, -8.0f), 1.2f, MAT_RUBBER));
+    objects.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -4.0f), 1.0f, MAT_IVORY));
+}
+
 Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
-    if (rayDirection.x < 0)
-        return C_GREEN;
-    return C_BLUE;
+    float zBuffer = 9999.0f;
+    Object* hitObject = nullptr;
+    Intersect intersect;
+    for (const auto& object : objects) {
+        Intersect i = object->rayIntersect(rayOrigin, rayDirection);
+        if (i.isIntersecting && i.distance < zBuffer) {
+            zBuffer = i.distance;
+            hitObject = object;
+            intersect = i;
+        }
+    }
+    if (!intersect.isIntersecting)
+        return C_CYAN;
+    
+    glm::vec3 lightDirection = glm::normalize(light.position - intersect.point);
+
+    float diffuseLightIntensity = glm::max(0.0f, glm::dot(intersect.normal, lightDirection));
+
+    Material mat = hitObject->material;
+    Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity;
+    Color color = diffuseLight;
+    return color;
+
 }
 
 void render() {
+    float fov = M_PI_2;
     for (int y = 0; y < screen.height; y++) {
         for (int x = 0; x < screen.width; x++) {
-            float screenX =   (2.0f * x) / screen.width - 1.0f;
-            float screenY = - (2.0f * y) / screen.height - 1.0f;
-            screenX *= screen.aspectRatio;
+            float screenX =  ((2.0f * (x + 0.5f)) / screen.width  - 1.0f) * tan(fov / 2.0f) * screen.aspectRatio;
+            float screenY = (-(2.0f * (y + 0.5f)) / screen.height + 1.0f) * tan(fov / 2.0f);
 
             glm::vec3 rayDirection = glm::normalize(glm::vec3(screenX, screenY, -1.0f));
-            Color pixelColor = castRay(glm::vec3(0, 0, 0), rayDirection);
+            Color pixelColor = castRay(glm::vec3(0.0f, 0.0f, 0.0f), rayDirection);
 
             drawPoint(glm::vec2(x, y), pixelColor);
         }
@@ -59,6 +90,7 @@ void render() {
 
 int main() {
     init();
+    setUpObjects();
     
     uint64_t perfFrequency = SDL_GetPerformanceFrequency();
     uint64_t frameStart = SDL_GetPerformanceCounter();

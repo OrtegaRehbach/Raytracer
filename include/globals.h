@@ -1,12 +1,15 @@
 #include <SDL2/SDL.h>
 
 #include "color.h"
+#include "material.h"
+#include "light.h"
 
-extern SDL_Window *window;
-extern SDL_Renderer *renderer;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
 extern const Uint8* KeyboardState;
 extern double deltaTime;
 extern bool running;
+extern Light light;
 
 struct Screen {
     const int width;
@@ -21,3 +24,6 @@ struct Screen {
 		aspectRatio = (float)width / (float)height;
 	}
 } screen = {800, 600};
+
+const Material MAT_RUBBER = {Color(80, 0, 0)};
+const Material MAT_IVORY = {Color(100, 100, 80)};
