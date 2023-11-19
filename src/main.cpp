@@ -9,6 +9,7 @@
 #include "globals.h"
 #include "object.h"
 #include "sphere.h"
+#include "camera.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -16,6 +17,7 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 Light light = {glm::vec3(-4.0f, 3.0f, 2.0f), 1.5f};
+Camera camera(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 
 std::vector<Object*> objects;
 
@@ -54,8 +56,8 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
-    objects.push_back(new Sphere(glm::vec3(0.0f, 3.0f, -8.0f), 1.2f, MAT_RUBBER));
-    objects.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -4.0f), 1.0f, MAT_IVORY));
+    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER));
+    objects.push_back(new Sphere(glm::vec3(-1.0f, 0.0f, -2.0f), 1.0f, MAT_IVORY));
 }
 
 Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
@@ -91,8 +93,12 @@ void render() {
             float screenX =  ((2.0f * (x + 0.5f)) / screen.width  - 1.0f) * tan(fov / 2.0f) * screen.aspectRatio;
             float screenY = (-(2.0f * (y + 0.5f)) / screen.height + 1.0f) * tan(fov / 2.0f);
 
-            glm::vec3 rayDirection = glm::normalize(glm::vec3(screenX, screenY, -1.0f));
-            Color pixelColor = castRay(glm::vec3(0.0f, 0.0f, 0.0f), rayDirection);
+            glm::vec3 cameraDirection = glm::normalize(camera.target - camera.position);
+            
+            glm::vec3 cameraX = glm::cross(cameraDirection, camera.up);
+            glm::vec3 cameraY = glm::cross(cameraX, cameraDirection);
+            glm::vec3 rayDirection = glm::normalize(cameraDirection + cameraX * screenX + cameraY * screenY);
+            Color pixelColor = castRay(camera.position, rayDirection);
 
             drawPoint(glm::vec2(x, y), pixelColor);
         }
@@ -123,7 +129,14 @@ int main() {
                 }
             }
         }
-
+        if (KeyboardState[SDL_SCANCODE_UP])
+            camera.move(1.0f);
+        if (KeyboardState[SDL_SCANCODE_DOWN])
+            camera.move(-1.0f);
+        if (KeyboardState[SDL_SCANCODE_LEFT])
+            camera.rotate(-1.0f, 0.0f);
+        if (KeyboardState[SDL_SCANCODE_RIGHT])
+            camera.rotate(1.0f, 0.0f);
         render();
 
         SDL_RenderPresent(renderer);
