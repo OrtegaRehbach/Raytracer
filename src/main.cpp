@@ -17,8 +17,11 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 bool performanceMode = false;
-Light light = {glm::vec3(0.0f, 0.0f, 2.0f), 2.5f, C_WHITE};
-Camera camera(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
+Light light = {glm::vec3(-1.0f, 0.0f, 10.0f), 1.5f, C_WHITE};
+Camera camera(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
+const Color BACKGROUND_COLOR = C_CYAN;
+const int MAX_RECURSION = 3;
+const float BIAS = 0.0001f;
 
 std::vector<Object*> objects;
 
@@ -57,8 +60,10 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
-    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 0.8f, MAT_RUBBER));
-    objects.push_back(new Sphere(glm::vec3(-3.0f, 0.0f, -4.0f), 1.5f, MAT_IVORY));
+    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER));
+    objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
+    objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
+    objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
 }
 
 float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Object* hitObject) {
@@ -75,7 +80,7 @@ float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Objec
     return 1.0f;
 }
 
-Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
+Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const int recursion = 0) {
     float zBuffer = 9999.0f;
     Object* hitObject = nullptr;
     Intersect intersect;
@@ -87,27 +92,41 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) {
             intersect = i;
         }
     }
-    if (!intersect.isIntersecting)
-        return C_CYAN;
+    if (!intersect.isIntersecting || recursion == MAX_RECURSION)
+        return BACKGROUND_COLOR;
     
     Material mat = hitObject->material;
 
     glm::vec3 lightDirection = glm::normalize(light.position - intersect.point);
+    glm::vec3 viewDirection = glm::normalize(rayOrigin - intersect.point);
+    glm::vec3 reflectDirection = glm::reflect(-lightDirection, intersect.normal);
 
     float diffuseLightIntensity = glm::max(0.0f, glm::dot(intersect.normal, lightDirection));
-    glm::vec3 reflectDirection = glm::reflect(-lightDirection, intersect.normal);
-    float specularReflection = glm::max(0.0f, glm::dot(-rayDirection, reflectDirection));
+    float specularReflection = glm::dot(viewDirection, reflectDirection);
     float specularLightIntensity = std::pow(specularReflection, mat.specularCoefficient);
     float shadowIntensity = castShadow(intersect.point, lightDirection, hitObject);
+
+    Color reflectedColor(0, 0, 0);
+    if (mat.reflectivity > 0) {
+        glm::vec3 origin = intersect.point + intersect.normal * BIAS;
+        reflectedColor = castRay(origin, reflectDirection, recursion + 1); 
+    }
+
+    Color refractedColor(0, 0, 0);
+    if (mat.transparency > 0) {
+        glm::vec3 origin = intersect.point - intersect.normal * BIAS;
+        glm::vec3 refractDir = glm::refract(rayDirection, intersect.normal, mat.refractionIndex);
+        refractedColor = castRay(origin, refractDir, recursion + 1); 
+    }
 
     Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
     Color specularLight = light.color * light.intensity * specularLightIntensity * mat.specularAlbedo;
     
     Color color;
     if (shadowIntensity == 1)   // Only add specular highlight on areas not in shadow
-        color = (diffuseLight + specularLight) * shadowIntensity;
+        color = (diffuseLight + specularLight) * shadowIntensity * (1.0f - mat.reflectivity - mat.transparency) + reflectedColor * mat.reflectivity + refractedColor * mat.transparency;
     else
-        color = diffuseLight * shadowIntensity;
+        color = diffuseLight * shadowIntensity * (1.0f - mat.reflectivity - mat.transparency) + reflectedColor * mat.reflectivity + refractedColor * mat.transparency;
     return color;
 
 }
