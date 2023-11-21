@@ -45,6 +45,9 @@ Intersect Box::rayIntersect(const Ray &ray) const {
 		distance = tmax;
 		if (distance < 0) return Intersect{false};
 	}
+	// Normal calculation method from:
+	// https://www.reddit.com/r/raytracing/comments/yxaabc/ray_box_intersection_normal/
+	// https://www.shadertoy.com/view/wtSyRd
 	// Intersection point on box
 	glm::vec3 hitPoint = ray.origin + (ray.direction * distance);
 	// Center of the box
