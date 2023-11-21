@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "globals.h"
+#include "ray.h"
 #include "object.h"
 #include "sphere.h"
+#include "box.h"
 #include "camera.h"
 
 SDL_Window* window;
@@ -17,7 +19,7 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 bool performanceMode = false;
-Light light = {glm::vec3(-1.0f, 0.0f, 10.0f), 1.5f, C_WHITE};
+Light light = {glm::vec3(-1.0f, 0.0f, 5.0f), 1.0f, C_WHITE};
 Camera camera(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 const Color BACKGROUND_COLOR = C_CYAN;
 const int MAX_RECURSION = 3;
@@ -60,10 +62,13 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
-    objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER));
-    objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
+    // objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER_RED));
+    // objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
     objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
-    objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
+    // objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
+    objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
+    objects.push_back(new Box(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), MAT_RUBBER_GREEN));
+    // objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER));
 }
 
 float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Object* hitObject) {
@@ -131,6 +136,10 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const i
 
 }
 
+Color castRay(const Ray &ray, const int recursion = 0) {
+    return castRay(ray.origin, ray.direction);
+}
+
 void render() {
     float fov = M_PI_2;
     for (int y = 0; y < screen.height; y++) {
@@ -148,7 +157,9 @@ void render() {
             glm::vec3 cameraX = glm::cross(cameraDirection, camera.up);
             glm::vec3 cameraY = glm::cross(cameraX, cameraDirection);
             glm::vec3 rayDirection = glm::normalize(cameraDirection + cameraX * screenX + cameraY * screenY);
-            Color pixelColor = castRay(camera.position, rayDirection);
+            Ray ray = Ray(camera.position, rayDirection);
+            Color pixelColor = castRay(ray);
+            // Color pixelColor = castRay(camera.position, rayDirection);
 
             drawPoint(glm::vec2(x, y), pixelColor);
         }

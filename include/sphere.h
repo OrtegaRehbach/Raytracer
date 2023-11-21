@@ -9,6 +9,7 @@ class Sphere : public Object {
 public:
     Sphere(const glm::vec3& center, float radius, const Material& material);
     Intersect rayIntersect(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) const override;
+    Intersect rayIntersect(const Ray &ray) const override;
 
 private:
     glm::vec3 center;
