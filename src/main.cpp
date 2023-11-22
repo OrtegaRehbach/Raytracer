@@ -65,7 +65,7 @@ void setUpObjects() {
     // objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER_RED));
     // objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
     objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
-    // objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
+    objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
     objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
     objects.push_back(new Box(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), MAT_RUBBER_GREEN));
     // objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER));
@@ -107,7 +107,7 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const i
     glm::vec3 reflectDirection = glm::reflect(-lightDirection, intersect.normal);
 
     float diffuseLightIntensity = glm::max(0.0f, glm::dot(intersect.normal, lightDirection));
-    float specularReflection = glm::dot(viewDirection, reflectDirection);
+    float specularReflection = glm::max(0.0f, glm::dot(viewDirection, reflectDirection));
     float specularLightIntensity = std::pow(specularReflection, mat.specularCoefficient);
     float shadowIntensity = castShadow(intersect.point, lightDirection, hitObject);
 
