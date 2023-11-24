@@ -7,4 +7,5 @@ struct Intersect {
     float distance = 0.0f;
     glm::vec3 point;
     glm::vec3 normal;
+    glm::vec2 uv;
 };
