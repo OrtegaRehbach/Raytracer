@@ -65,9 +65,25 @@ Intersect Box::rayIntersect(const Ray &ray) const {
 
 	// Normal Calculation
 	glm::vec3 normal;
-	normal = boxVec / std::max(std::max(std::abs(boxVec.x), std::abs(boxVec.y)), std::abs(boxVec.z));
-	normal = glm::clamp(normal, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
-	normal = glm::normalize(glm::floor(normal * 1.0000001f)); // Unit normal for hitPoint
+	// normal = boxVec / std::max(std::max(std::abs(boxVec.x), std::abs(boxVec.y)), std::abs(boxVec.z));
+	// normal = glm::clamp(normal, glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
+	// normal = glm::normalize(glm::floor(normal * 1.0000001f)); // Unit normal for hitPoint
+
+	const float epsilon = 1e-6f; // Adjust the epsilon value as needed
+
+	if (std::abs(hitPoint.x - bounds[0].x) < epsilon) {
+		normal = glm::vec3(-1.0f, 0.0f, 0.0f);  // Left face
+	} else if (std::abs(hitPoint.x - bounds[1].x) < epsilon) {
+		normal = glm::vec3(1.0f, 0.0f, 0.0f);   // Right face
+	} else if (std::abs(hitPoint.y - bounds[0].y) < epsilon) {
+		normal = glm::vec3(0.0f, -1.0f, 0.0f);  // Bottom face
+	} else if (std::abs(hitPoint.y - bounds[1].y) < epsilon) {
+		normal = glm::vec3(0.0f, 1.0f, 0.0f);   // Top face
+	} else if (std::abs(hitPoint.z - bounds[0].z) < epsilon) {
+		normal = glm::vec3(0.0f, 0.0f, -1.0f);  // Back face
+	} else if (std::abs(hitPoint.z - bounds[1].z) < epsilon) {
+		normal = glm::vec3(0.0f, 0.0f, 1.0f);   // Front face
+	}
 
     return Intersect{true, distance, hitPoint, normal, glm::vec2(u, v)};
 }
