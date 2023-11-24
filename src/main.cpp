@@ -19,7 +19,7 @@ const Uint8* KeyboardState;
 double deltaTime;
 bool running;
 bool performanceMode = false;
-Light light = {glm::vec3(-1.0f, 0.0f, 5.0f), 1.0f, C_WHITE};
+Light light = {glm::vec3(-1.0f, 2.0f, -5.0f), 1.0f, C_WHITE};
 Camera camera(glm::vec3(0, 0, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 10.0f);
 const Color BACKGROUND_COLOR = C_CYAN;
 const int MAX_RECURSION = 3;
@@ -62,13 +62,15 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
+    // Spheres
     // objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER_RED));
     // objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
-    objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
-    objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
+    // objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
+    // objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
+    // Cubes/Boxes
     objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
     objects.push_back(new Box(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), MAT_RUBBER_GREEN));
-    // objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER));
+    objects.push_back(new Box(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), MAT_RUBBER_GREEN));
 }
 
 float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Object* hitObject) {
@@ -124,7 +126,17 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const i
         refractedColor = castRay(origin, refractDir, recursion + 1); 
     }
 
-    Color diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
+    Color diffuseLight;
+    if (mat.texture) {
+        glm::vec2 uvCoords = intersect.uv;
+        // Invert the V (vertical) component
+        uvCoords.y = 1.0f - uvCoords.y;
+        Color textureColor = mat.texture->sample(uvCoords.x, uvCoords.y);
+        diffuseLight = textureColor * light.intensity * diffuseLightIntensity * mat.albedo;
+    } else {
+        diffuseLight = mat.diffuse * light.intensity * diffuseLightIntensity * mat.albedo;
+    }
+
     Color specularLight = light.color * light.intensity * specularLightIntensity * mat.specularAlbedo;
     
     Color color;
@@ -192,14 +204,21 @@ int main() {
                     performanceMode = !performanceMode;
             }
         }
-        if (KeyboardState[SDL_SCANCODE_UP])
+        if (KeyboardState[SDL_SCANCODE_W])
             camera.move(1.0f);
-        if (KeyboardState[SDL_SCANCODE_DOWN])
+        if (KeyboardState[SDL_SCANCODE_S])
             camera.move(-1.0f);
         if (KeyboardState[SDL_SCANCODE_LEFT])
             camera.rotate(-1.0f, 0.0f);
         if (KeyboardState[SDL_SCANCODE_RIGHT])
             camera.rotate(1.0f, 0.0f);
+        if (KeyboardState[SDL_SCANCODE_UP])
+            camera.rotate(0.0f, -1.0f);
+        if (KeyboardState[SDL_SCANCODE_DOWN])
+            camera.rotate(0.0f, 1.0f);
+        
+        light.position = camera.position;
+        
         render();
 
         SDL_RenderPresent(renderer);
