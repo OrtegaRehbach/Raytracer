@@ -47,12 +47,19 @@ struct Color {
     }
 
     Color operator*(float scalar) const {
-        Uint8 _r = static_cast<Uint8>(r * scalar);
-        Uint8 _g = static_cast<Uint8>(g * scalar);
-        Uint8 _b = static_cast<Uint8>(b * scalar);
-        Uint8 _a = static_cast<Uint8>(a * scalar);
+        float _r_float = r * scalar;
+        float _g_float = g * scalar;
+        float _b_float = b * scalar;
+        float _a_float = a * scalar;
+
+        Uint8 _r = static_cast<Uint8>(std::clamp(_r_float, 0.0f, 255.0f));
+        Uint8 _g = static_cast<Uint8>(std::clamp(_g_float, 0.0f, 255.0f));
+        Uint8 _b = static_cast<Uint8>(std::clamp(_b_float, 0.0f, 255.0f));
+        Uint8 _a = static_cast<Uint8>(std::clamp(_a_float, 0.0f, 255.0f));
+
         return Color(_r, _g, _b, _a);
     }
+
 
     Color operator*(Color other) const {
         Uint8 _r = static_cast<Uint8>((r * other.r) / 255);
