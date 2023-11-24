@@ -25,9 +25,9 @@ struct Screen {
 	}
 } screen = {800, 600};
 
-const Material MAT_RUBBER_RED = {Color(80, 0, 0), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f};
-const Material MAT_RUBBER_GREEN = {Color(0, 80, 0), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f};
-const Material MAT_RUBBER_BLUE = {Color(0, 0, 80), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f};
+const Material MAT_RUBBER_RED = {Color(80, 0, 0), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f, 0.0f};
+const Material MAT_RUBBER_GREEN = {Color(0, 80, 0), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f, 0.0f, new Texture("../assets/grass.jpg")};
+const Material MAT_RUBBER_BLUE = {Color(0, 0, 80), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f, 0.0f};
 const Material MAT_IVORY = {Color(100, 100, 80), 0.5f, 0.5f, 50.0f, 0.4f, 0.0f};
 const Material MAT_MIRROR = {Color(255, 255, 255), 0.0f, 10.0f, 1425.0f, 0.9f, 0.0f};
 const Material MAT_GLASS = {Color(255, 255, 255), 0.0f, 10.0f, 1425.0f, 0.2f, 1.0f};
