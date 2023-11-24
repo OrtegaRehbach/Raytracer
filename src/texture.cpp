@@ -11,6 +11,12 @@ Texture::Texture(const std::string& filePath) : textureSurface(nullptr) {
     textureSurface = SDL_ConvertSurfaceFormat(textureSurface, SDL_PIXELFORMAT_RGBA32, 0);
 }
 
+Texture::~Texture() {
+    if (textureSurface) {
+        SDL_FreeSurface(textureSurface);
+    }
+}
+
 Color Texture::sample(float u, float v) const {
     // Ensure the surface is valid
     if (!textureSurface) {

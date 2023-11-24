@@ -26,6 +26,7 @@ const int MAX_RECURSION = 3;
 const float BIAS = 0.0001f;
 
 std::vector<Object*> objects;
+Texture* skyboxTexture;
 
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -43,9 +44,12 @@ void init() {
         SDL_Quit();
         exit(1);
     }
+    // Load skybox
+    skyboxTexture = new Texture("../assets/skybox.jpg");
 }
 
 void quit() {
+    delete skyboxTexture;
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -68,9 +72,24 @@ void setUpObjects() {
     // objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
     // objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
     // Cubes/Boxes
-    objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
+    // objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
     objects.push_back(new Box(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), MAT_RUBBER_GREEN));
     objects.push_back(new Box(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), MAT_RUBBER_GREEN));
+    objects.push_back(new Box(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 1.0f), MAT_RUBBER_GREEN));
+}
+
+Color renderSkybox(const glm::vec3& rayDirection) {
+    // Calculate spherical coordinates based on ray direction
+    float theta = acos(rayDirection.y);
+    float phi = atan2(rayDirection.z, rayDirection.x) + M_PI;
+
+    // Map spherical coordinates to UV coordinates
+    float u = phi / (2.0f * M_PI);
+    float v = theta / M_PI;
+
+    // Sample the sky texture using UV coordinates
+    // Replace "skyTexture" with the actual variable storing your sky texture
+    return skyboxTexture->sample(u, v);
 }
 
 float castShadow(const glm::vec3& shadowOrigin, const glm::vec3& lightDir, Object* hitObject) {
@@ -100,7 +119,7 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const i
         }
     }
     if (!intersect.isIntersecting || recursion == MAX_RECURSION)
-        return BACKGROUND_COLOR;
+        return renderSkybox(rayDirection);
     
     Material mat = hitObject->material;
 
