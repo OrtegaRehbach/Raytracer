@@ -265,7 +265,7 @@ int main() {
         if (KeyboardState[SDL_SCANCODE_DOWN])
             camera.rotate(0.0f, 1.0f);
         
-        light.position = camera.position;
+        // light.position = camera.position;
         
         render();
 
