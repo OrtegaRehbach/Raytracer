@@ -38,3 +38,13 @@ Material MAT_DIRT = {C_SADDLE_BROWN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullpt
 Material MAT_STONE = {C_GRAY, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
 Material MAT_WOOD = {C_BROWN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
 Material MAT_LEAVES = {C_GREEN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
+Material MAT_WATER = {
+    Color(0, 127, 255),     // Diffuse color (light blue)
+    0.8f,                   // Albedo
+    0.8f,                   // Specular albedo
+    50.0f,                  // Specular coefficient
+    0.1f,                   // Reflectivity
+    0.9f,                   // Transparency
+    1.33f,                  // Refraction index (typical value for water)
+    nullptr                 // No texture for now, you can add a water texture if desired
+};
