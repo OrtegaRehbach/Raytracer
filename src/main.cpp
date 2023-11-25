@@ -66,16 +66,45 @@ void drawPoint(glm::vec2 position, Color color) {
 }
 
 void setUpObjects() {
-    // Spheres
-    // objects.push_back(new Sphere(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, MAT_RUBBER_RED));
-    // objects.push_back(new Sphere(glm::vec3(-1.0f, 1.0f, -4.0f), 1.0f, MAT_IVORY));
-    // objects.push_back(new Sphere(glm::vec3(1.0f, 1.0f, -4.0f), 1.0f, MAT_MIRROR));
-    // objects.push_back(new Sphere(glm::vec3(-2.0f, 0.0f, -2.0f), 1.0f, MAT_GLASS));
-    // Cubes/Boxes
-    // objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), MAT_RUBBER_RED));
-    objects.push_back(new Box(glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), MAT_RUBBER_GREEN));
-    objects.push_back(new Box(glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 1.0f), MAT_RUBBER_GREEN));
-    objects.push_back(new Box(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(2.0f, 1.0f, 1.0f), MAT_RUBBER_GREEN));
+    // Grass
+    objects.push_back(new Box(glm::vec3(-3.0f, -1.0f, -3.0f), glm::vec3(3.0f, 0.0f, 3.0f), MAT_GRASS));
+    objects.push_back(new Box(glm::vec3(-4.0f, -1.0f, -2.0f), glm::vec3(-3.0f, 0.0f, 2.0f), MAT_GRASS));
+    objects.push_back(new Box(glm::vec3(-5.0f, -1.0f, -1.0f), glm::vec3(-4.0f, 0.0f, 5.0f), MAT_GRASS));
+    objects.push_back(new Box(glm::vec3(-4.0f, -1.0f, 5.0f), glm::vec3(1.0f, 0.0f, 6.0f), MAT_GRASS));
+    objects.push_back(new Box(glm::vec3(1.0f, -1.0f, 3.0f), glm::vec3(2.0f, 0.0f, 5.0f), MAT_GRASS));
+
+    // Dirt layer
+    objects.push_back(new Box(glm::vec3(-3.0f, -2.0f, -3.0f), glm::vec3(3.0f, -1.0f, 3.0f), MAT_DIRT));
+    objects.push_back(new Box(glm::vec3(-4.0f, -2.0f, -1.0f), glm::vec3(-3.0f, -1.0f, 3.0f), MAT_DIRT));
+    objects.push_back(new Box(glm::vec3(-4.0f, -2.0f, 3.0f), glm::vec3(1.0f, -1.0f, 5.0f), MAT_DIRT));
+
+    // Stone layer
+    objects.push_back(new Box(glm::vec3(-3.0f, -3.0f, -3.0f), glm::vec3(3.0f, -2.0f, 3.0f), MAT_STONE));
+    objects.push_back(new Box(glm::vec3(-1.0f, -4.0f, -2.0f), glm::vec3(2.0f, -3.0f, 2.0f), MAT_STONE));
+    objects.push_back(new Box(glm::vec3(0.0f, -5.0f, -1.0f), glm::vec3(1.0f, -4.0f, 1.0f), MAT_STONE));
+
+    // Water layer
+    objects.push_back(new Box(glm::vec3(-4.0f, -1.0f, 2.0f), glm::vec3(-3.0f, 0.0f, 5.0f), MAT_WATER));
+    objects.push_back(new Box(glm::vec3(-3.0f, -1.0f, 3.0f), glm::vec3(1.0f, 0.0f, 5.0f), MAT_WATER));
+
+    // Tree
+    // Trunk
+    objects.push_back(new Box(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 4.0f, 1.0f), MAT_WOOD));
+
+    // Foliage (leaves)
+    objects.push_back(new Box(glm::vec3(-2.0f, 4.0f, -2.0f), glm::vec3(3.0f, 6.0f, 3.0f), MAT_LEAVES));
+
+    // Cross on top of the tree (foliage)
+    // Long part
+    objects.push_back(new Box(glm::vec3(0.0f, 5.0f, -1.0f), glm::vec3(1.0f, 8.0f, 2.0f), MAT_LEAVES));
+
+    // Wide part
+    objects.push_back(new Box(glm::vec3(-1.0f, 5.0f, 0.0f), glm::vec3(0.0f, 8.0f, 1.0f), MAT_LEAVES));
+    objects.push_back(new Box(glm::vec3(1.0f, 5.0f, 0.0f), glm::vec3(2.0f, 8.0f, 1.0f), MAT_LEAVES));
+
+    // Other decorative elements (you can add more as needed)
+    objects.push_back(new Sphere(glm::vec3(2.0f, 1.0f, 1.0f), 0.5f, MAT_GLASS));
+    objects.push_back(new Sphere(glm::vec3(-2.0f, 1.0f, -1.0f), 0.7f, MAT_MIRROR));
 }
 
 Color renderSkybox(const glm::vec3& rayDirection) {
