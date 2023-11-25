@@ -98,3 +98,5 @@ const Color C_BLUE      = Color(0, 0, 255);
 const Color C_YELLOW    = Color(255, 255, 0);
 const Color C_CYAN      = Color(0, 255, 255);
 const Color C_MAGENTA   = Color(255, 0, 255);
+const Color C_BROWN     = Color(165, 42, 42);
+const Color C_SADDLE_BROWN     = Color(139, 69, 19);
