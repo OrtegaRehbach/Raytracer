@@ -31,3 +31,10 @@ const Material MAT_RUBBER_BLUE = {Color(0, 0, 80), 0.9f, 0.1f, 10.0f, 0.0f, 0.0f
 const Material MAT_IVORY = {Color(100, 100, 80), 0.5f, 0.5f, 50.0f, 0.4f, 0.0f};
 const Material MAT_MIRROR = {Color(255, 255, 255), 0.0f, 10.0f, 1425.0f, 0.9f, 0.0f};
 const Material MAT_GLASS = {Color(255, 255, 255), 0.0f, 10.0f, 1425.0f, 0.2f, 1.0f};
+
+// New mats
+Material MAT_GRASS = {C_GREEN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
+Material MAT_DIRT = {C_SADDLE_BROWN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
+Material MAT_STONE = {C_GRAY, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
+Material MAT_WOOD = {C_BROWN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
+Material MAT_LEAVES = {C_GREEN, 0.8f, 0.5f, 32.0f, 0.1f, 0.0f, 1.5f, nullptr};
