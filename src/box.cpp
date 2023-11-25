@@ -12,6 +12,31 @@
  *
  */
 
+glm::vec2 Box::calculateUV(const glm::vec3& hitVector) const {
+    // Calculate UV coordinates based on the direction of the intersecting ray
+    float u, v;
+
+    if (std::abs(hitVector.z) > std::max(std::abs(hitVector.x), std::abs(hitVector.y))) {
+        // Front or back face
+        u = (hitVector.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
+        v = (hitVector.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
+    } else if (std::abs(hitVector.x) > std::abs(hitVector.y)) {
+        // Left or right face
+        u = (hitVector.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
+        v = (hitVector.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
+    } else {
+        // Top or bottom face
+        u = (hitVector.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
+        v = (hitVector.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
+    }
+
+    // Clamp UV coordinates to [0, 1] range
+    u = glm::clamp(u, 0.0f, 1.0f);
+    v = glm::clamp(v, 0.0f, 1.0f);
+
+    return glm::vec2(u, v);
+}
+
 Intersect Box::rayIntersect(const Ray &ray) const {
 	float tmin, tmax, tymin, tymax, tzmin, tzmax, distance;
 
@@ -50,10 +75,8 @@ Intersect Box::rayIntersect(const Ray &ray) const {
 	// https://www.shadertoy.com/view/wtSyRd
 	
 	// Intersection point on box
-	glm::vec3 hitPoint = ray.origin + (ray.direction * distance);
-	// Center of the box
-	glm::vec3 boxCenter = (bounds[1] + bounds[0]) / 2.0f;
-	glm::vec3 boxVec = hitPoint - boxCenter; // Vector from hitPoint to center
+	glm::vec3 hitPoint = ray.origin + ray.direction * distance;
+    glm::vec3 hitVector = hitPoint - bounds[0];
 
 	// Calculate UV coordinates based on the intersection point
     float u = (hitPoint.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
@@ -62,6 +85,9 @@ Intersect Box::rayIntersect(const Ray &ray) const {
     // Clamp UV coordinates to [0, 1] range
     u = glm::clamp(u, 0.0f, 1.0f);
     v = glm::clamp(v, 0.0f, 1.0f);
+
+    glm::vec2 uv = calculateUV(hitPoint);
+	// glm::vec2 uv(u, v);
 
 	// Normal Calculation
 	glm::vec3 normal;
@@ -85,7 +111,7 @@ Intersect Box::rayIntersect(const Ray &ray) const {
 		normal = glm::vec3(0.0f, 0.0f, 1.0f);   // Front face
 	}
 
-    return Intersect{true, distance, hitPoint, normal, glm::vec2(u, v)};
+    return Intersect{true, distance, hitPoint, normal, uv};
 }
 
 Intersect Box::rayIntersect(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) const {

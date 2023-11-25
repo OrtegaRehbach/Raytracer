@@ -24,6 +24,7 @@ public:
 	}
 	Intersect rayIntersect(const glm::vec3& rayOrigin, const glm::vec3& rayDirection) const override;
     Intersect rayIntersect(const Ray &ray) const override;
+	glm::vec2 calculateUV(const glm::vec3& hitVector) const;
 
 	// corners
 	glm::vec3 bounds[2];

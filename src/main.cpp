@@ -177,8 +177,9 @@ Color castRay(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const i
     Color diffuseLight;
     if (mat.texture) {
         glm::vec2 uvCoords = intersect.uv;
+        // return Color(uvCoords.x, uvCoords.y, 0.0f);
         // Invert the V (vertical) component
-        uvCoords.y = 1.0f - uvCoords.y;
+        // uvCoords.y = 1.0f - uvCoords.y;
         Color textureColor = mat.texture->sample(uvCoords.x, uvCoords.y);
         diffuseLight = textureColor * light.intensity * diffuseLightIntensity * mat.albedo;
     } else {
